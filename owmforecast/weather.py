@@ -2,7 +2,7 @@ import requests
 
 API_URL = "https://api.openweathermap.org/data/2.5"
 
-def weather(lat, lon, api_key, **kwargs):
+def get(lat, lon, api_key, **kwargs):
     endpoint = API_URL + "/weather"
     query = {
         "lat" : lat,
