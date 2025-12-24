@@ -35,5 +35,5 @@ def get(lat, lon, api_key, **kwargs):
         else:
             return response.json()
     else:
-        raise response.raise_for_status()
+        response.raise_for_status()
 
