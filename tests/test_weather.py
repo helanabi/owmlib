@@ -4,78 +4,69 @@ from owmforecast import weather
 
 class TestWeatherGet:
     endpoint = "https://api.openweathermap.org/data/2.5/weather"
-    req_args = {"lat": 44.34, "lon": 10.99, "appid": "API_KEY"}
-    params = {
+    required_args = {"lat": 44.34, "lon": 10.99, "appid": "API_KEY"}
+    optional_args = {
         "mode": ["xml", "html"],
         "units": ["standard", "metric", "imperial"],
-        "lang": []
+        "lang": ["ar"]
     }
+    response_text = ("text", "SERVER RESPONSE")
+    response_json = ("json", lambda: {"RESPONSE": "JSON"})
 
     def get_weather(self, **kwargs):
-        return weather.get(self.req_args["lat"],
-                           self.req_args["lon"],
-                           self.req_args["appid"],
+        return weather.get(self.required_args["lat"],
+                           self.required_args["lon"],
+                           self.required_args["appid"],
                            **kwargs)
 
-    def args_tester(self, mock_get, response, **kwargs):
-        mock_get.return_value.status_code = 200
-        mock_get.return_value.__setattr__(*response)
-        srv_response = self.get_weather(**kwargs)
-        mock_get.assert_called_with(self.endpoint,
-                                    params={**self.req_args, **kwargs})
+    def args_tester(self, expected_response, **kwargs):
+        with mock.patch("requests.get") as mock_get:
+            mock_get.return_value.status_code = 200
+            setattr(mock_get.return_value, *expected_response)
+            returned_response = self.get_weather(**kwargs)
 
-        if isinstance(response[1], str):
-            assert srv_response == response[1]
+        mock_get.assert_called_once_with(
+            self.endpoint,
+            params={**self.required_args, **kwargs}
+        )
+
+        if callable(expected_response[1]):
+            assert returned_response == expected_response[1]()
         else:
-            assert srv_response == response[1]()
+            assert returned_response == expected_response[1] 
 
-    def required_args_tester(self, mock_get):
-        self.args_tester(mock_get, ("json", lambda: {"response": "json"}))
+    def test_required_args(self):
+        self.args_tester(self.response_json)
             
-    def opt_args_tester(self, mock_get):
-        text = ("text", "SERVER RESPONSE")
-        json = ("json", lambda: {"RESPONSE": "JSON"})
-        response = text
-        
-        for param in self.params:
-            if param == "mode":
-                response = text
-            else:
-                response = json
-                
-            for value in self.params[param]:
-                self.args_tester(mock_get, response, **{param: value})
+    def test_optional_args(self):
+        response = self.response_text
 
-        self.args_tester(mock_get, json, lang="Arabic")
-        self.args_tester(mock_get,
-                         text,
+        for param in self.optional_args:
+            if param == "mode":
+                response = self.response_text
+            else:
+                response = self.response_json
+                
+            for value in self.optional_args[param]:
+                self.args_tester(response, **{param: value})
+
+    def test_combined_args(self):
+        self.args_tester(self.response_text,
                          mode="html",
                          units="metric",
                          lang="Spanish")
 
-    def invalid_kwarg_tester(self, mock_get):
+    def test_invalid_kwarg(self):
         with pytest.raises(TypeError):
             self.get_weather(city="Tiflet")
 
-    def invalid_value_tester(self, mock_get):
+    def test_invalid_value(self):
         for key, value in (("mode", "json"), ("units", "Celsius")):
             with pytest.raises(ValueError):
                 self.get_weather(**{key: value})
 
-    def bad_status_tester(self, mock_get):
+    @mock.patch("requests.get") #, autospec=True)
+    def test_bad_status(self, mock_get):
         mock_get.return_value.status_code = 400
         self.get_weather()
         mock_get.return_value.raise_for_status.assert_called()
-
-    def test_all(self):
-        tests = [
-            self.required_args_tester,
-            self.opt_args_tester,
-            self.invalid_kwarg_tester,
-            self.invalid_value_tester,
-            self.bad_status_tester
-        ]
-        
-        for test in tests:
-            with mock.patch("requests.get") as mock_get:
-                test(mock_get)
