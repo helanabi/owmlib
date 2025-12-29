@@ -104,4 +104,4 @@ def make_request(path, query, return_text=False):
         response.raise_for_status()
 
 def collate(*args):
-    return ','.join(str(arg) for arg in args if arg)
+    return ','.join(str(arg) for arg in args if arg or arg == 0)
