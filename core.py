@@ -44,12 +44,12 @@ def geo_reverse(lat, lon, appid, limit=None):
    })
 
 def request_geo(path, query):
-    if query["limit"]:
+    if query.get("limit"):
         try:
-            query["limit"] = int(limit)
+            query["limit"] = int(query["limit"])
         except ValueError:
             raise ValueError(
-                f"invalid integer value for parameter limit: {limit}"
+                f"invalid integer value for parameter limit: {query["limit"]}"
             )
     else:
          query.pop("limit", '')
