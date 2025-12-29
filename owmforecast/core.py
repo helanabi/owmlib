@@ -1,4 +1,5 @@
 import requests
+import util
 
 # HOSTNAME = ""
 API_URL = "https://api.openweathermap.org/data/2.5"
@@ -22,10 +23,8 @@ def weather(lat, lon, api_key, **kwargs):
                         **kwargs)
 
 def geo_direct(city, appid, state='', country='', limit=None):
-    q = str(city) + (state and f",{state}")  + (country and f",{country}")
-
     query = {
-        "q": q,
+        "q": util.collate(city, state, country),
         "appid": appid
     }
 
@@ -38,6 +37,15 @@ def geo_direct(city, appid, state='', country='', limit=None):
             )
 
     return request_geo("/direct", query)
+
+def geo_zip(zip_code, appid, country=''):
+    return request_geo("/zip", {
+        "zip": util.collate(zip_code, country),
+        "appid": appid
+    })
+
+def geo_reverse():
+    pass
 
 def request_geo(path, query):
     response = requests.get(GEO_URL + path, params=query)
