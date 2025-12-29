@@ -3,20 +3,24 @@ import requests
 BASE_URL = "https://api.openweathermap.org"
 
 def forecast(lat, lon, appid, **kwargs):
-    return request_data("/forecast",
-                        lat,
-                        lon,
-                        appid,
-                        add_param=("cnt", ''),
-                        **kwargs)
+    return request_data(
+        "/forecast",
+        lat,
+        lon,
+        appid,
+        add_param=("cnt", ''),
+        **kwargs
+    )
 
 def weather(lat, lon, appid, **kwargs):
-    return request_data("/weather",
-                        lat,
-                        lon,
-                        appid,
-                        add_param=("mode", "html"),
-                        **kwargs)
+    return request_data(
+        "/weather",
+        lat,
+        lon,
+        appid,
+        add_param=("mode", "html"),
+        **kwargs
+    )
 
 def geo_direct(city, appid, state='', country='', limit=None):
     return request_geo("/direct", {
@@ -57,7 +61,6 @@ def request_data(path, lat, lon, appid, add_param=(), **kwargs):
 
     `add_param` (tuple) of the form (name, value)
     """
-    endpoint = BASE_URL + "/data/2.5" + path
     query = {
         "lat" : lat,
         "lon" : lon,
