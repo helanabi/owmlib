@@ -1,4 +1,4 @@
-import core
+from owmlib.core import collate
 
 def test_collate():
     test_sample = (
@@ -14,4 +14,4 @@ def test_collate():
     )
 
     for args, result in test_sample:
-        assert core.collate(*args) == result
+        assert collate(*args) == result
