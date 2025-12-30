@@ -7,6 +7,9 @@ It avoids imposing additional constraints or defaults beyond those defined by
 OWM itself. Parameters are passed through as-is most of the time, and validation
 is delegated to the upstream service.
 
+JSON responses are returned as parsed Python objects (`dict` or `list`),
+depending on the upstream API.
+
 ## Quick Start
 
 ```python
@@ -29,7 +32,11 @@ print(data["main"]["temp"])
 
 ## Installation
 
-To do
+```
+git clone https://github.com/helanabi/owmlib
+
+pip install owmlib
+```
 
 ## Supported APIs
 
