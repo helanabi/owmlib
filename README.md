@@ -33,16 +33,14 @@ print(data["main"]["temp"])
 ## Installation
 
 ```
-git clone https://github.com/helanabi/owmlib
-
-pip install owmlib
+pip install git+https://github.com/helanabi/owmlib.git
 ```
 
 ## Supported APIs
 
 1. Current weather
 2. 3-hour forecast for 5 days
-3. Geocoding: converts city names/zip codes to geo coordinates and vice-versa
+3. Geocoding
 
 ## Library API Reference
 
@@ -77,12 +75,11 @@ Access current weather data for any location
 #### Optional Keyword Arguments
 
 - `mode`, `units`, `lang`, `cnt`
-> `forecast() does not support `html` mode
+> `forecast()` does not support `html` mode
 
 ### `owmlib.geo_direct(city, appid, state='', country='', limit=None)`
 
-Convert the specified name of a location or zip/post code into the exact
-geographical coordinates
+Convert the specified location name to geographical coordinates
 
 ### `owmlib.geo_zip(zip_code, appid, country='')`
 
@@ -94,7 +91,7 @@ Convert geographical coordinates to location names
 
 ## Notes
 
-- Missing parameters in API response means that corresponding weather phenomena
+- Missing parameters in API responses means that the corresponding weather phenomena
 did not occur at the time of measurement.
 - More information about accepted values, value interpretation and API response
 fields can be found in the respective API documentation pages linked below.
